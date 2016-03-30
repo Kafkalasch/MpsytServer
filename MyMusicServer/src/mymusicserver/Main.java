@@ -9,7 +9,7 @@ package mymusicserver;
  *
  * @author Michi
  */
-public class MyMusicServer {
+public class Main {
 
     /**
      * @param args the command line arguments
