@@ -5,21 +5,25 @@
  */
 package mymusicserver;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 /**
  *
  * @author Michi
  */
-public class PropertiesWrapper {
+public abstract class PropertiesWrapper {
     
-    public static Properties GetmymusicserverProperties() throws FileNotFoundException, IOException{
+    protected static Properties GetPropertiesFromFile(String propertiesFile) throws FileNotFoundException, IOException{
         Properties props = new Properties();
-        try(Reader reader = new FileReader("mymusicserver.properties")) {
+        String path = new File(PropertiesWrapper.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+       
+        try(Reader reader = new FileReader(URLDecoder.decode(path, "UTF-8") + File.separator + propertiesFile)) {
             
             props.load(reader);
             return props;

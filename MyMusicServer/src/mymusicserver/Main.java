@@ -5,6 +5,8 @@
  */
 package mymusicserver;
 
+import java.io.IOException;
+
 /**
  *
  * @author Michi
@@ -14,8 +16,9 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-       System.out.println("hallo welt");
+    public static void main(String[] args) throws IOException {
+       YoutubeDownloader yd = new YoutubeDownloader(new FileManager());
+       yd.downloadUrl("testurl");
     }
     
 }
