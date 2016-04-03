@@ -3,13 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DevelopmentExampleCode;
+package WebServer;
 
-/*
- 2  * ExampleHTTPPOSTServer.java
- 3  * Author: S.Prasanna
- 4  * @version 1.00 
- 5 */
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -78,7 +74,7 @@ public abstract class HTTPServer extends Thread {
     }
     
     private String decorateWithHTML(String msg){
-        return ExampleHTTPPOSTServer.HTML_START + msg + ExampleHTTPPOSTServer.HTML_END;
+        return HTML_START + msg + HTML_END;
     }
 
     

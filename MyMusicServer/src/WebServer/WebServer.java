@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author Michi
  */
-public class WebServer {
+public final class WebServer {
     
     private static final Logger logger = Logger.getLogger(WebServer.class.getName());
     private static final String log_newConn = "HTTP Server Waiting for client on port ";
