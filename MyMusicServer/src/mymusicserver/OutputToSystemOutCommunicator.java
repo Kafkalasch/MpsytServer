@@ -9,11 +9,11 @@ package mymusicserver;
  *
  * @author Michi
  */
-public class MusicServer {
-    
-    private FileManager fileManager;
-    
-    public MusicServer(){
-        fileManager = new FileManager();
+public class OutputToSystemOutCommunicator extends OutputCommunicator {
+
+    @Override
+    public void println(String str) {
+        System.out.println(str);
     }
+    
 }

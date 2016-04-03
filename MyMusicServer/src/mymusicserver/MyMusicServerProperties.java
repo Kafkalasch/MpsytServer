@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public final class MyMusicServerProperties extends PropertiesWrapper{
     
-    private static String DownloadedFilesOutputDir;
+    private static int WebServer_Port;
     
     
     static
@@ -24,10 +24,9 @@ public final class MyMusicServerProperties extends PropertiesWrapper{
         Properties props;
         try {
             props = GetPropertiesFromFile("mymusicserver.properties");
-            DownloadedFilesOutputDir = props.getProperty("DownloadedFilesOutputDir");
+            WebServer_Port = Integer.parseInt(props.getProperty("WebServer_Port"));
         } catch (IOException ex) {
             Logger.getLogger(MyMusicServerProperties.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
         }
         
     }
@@ -40,7 +39,7 @@ public final class MyMusicServerProperties extends PropertiesWrapper{
     /**
      * @return the DownloadedFilesOutputDir
      */
-    public static String getDownloadedFilesOutputDir() {
-        return DownloadedFilesOutputDir;
+    public int getWebServer_Port() {
+        return WebServer_Port;
     }
 }
