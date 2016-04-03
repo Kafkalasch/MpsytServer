@@ -14,10 +14,10 @@ import java.util.logging.Logger;
  *
  * @author Michi
  */
-public final class MyMusicServerProperties extends PropertiesWrapper{
+public final class MyProperties extends PropertiesWrapper{
     
     private static int WebServer_Port;
-    
+    private static String Bash_ProgramNameToExecute;
     
     static
     {
@@ -25,8 +25,9 @@ public final class MyMusicServerProperties extends PropertiesWrapper{
         try {
             props = GetPropertiesFromFile("mymusicserver.properties");
             WebServer_Port = Integer.parseInt(props.getProperty("WebServer_Port"));
+            Bash_ProgramNameToExecute = props.getProperty("Bash_ProgramNameToExecute");
         } catch (IOException ex) {
-            Logger.getLogger(MyMusicServerProperties.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MyProperties.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -34,12 +35,13 @@ public final class MyMusicServerProperties extends PropertiesWrapper{
     /***
      * Soll nicht von außen instiantiiert werden. Ist eine statische Klasse.
      */
-    private MyMusicServerProperties(){}
+    private MyProperties(){}
 
-    /**
-     * @return the DownloadedFilesOutputDir
-     */
-    public int getWebServer_Port() {
+    public static int getWebServer_Port() {
         return WebServer_Port;
+    }
+    
+    public static String getBash_ProgramNameToExecute() {
+        return Bash_ProgramNameToExecute;
     }
 }

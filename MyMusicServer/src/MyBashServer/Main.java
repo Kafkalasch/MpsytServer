@@ -34,7 +34,7 @@ public class Main {
 //        }
 
 ////        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(new OutputToFileCommunicator("ProcessOutpur", true).GetOutputStream());
-////        comm.startProcess("mpsyt");
+////        comm.startProcess();
 //        String input = "";
 ////        System.out.println("Enter exit or quit to end the program.");
 //        Scanner scan = new Scanner(System.in);
