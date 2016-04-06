@@ -5,6 +5,7 @@
  */
 package MyBashServer;
 
+import Properties.PropertiesWrapper;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -18,17 +19,16 @@ public final class MyProperties extends PropertiesWrapper{
     
     private static int WebServer_Port;
     private static String Bash_ProgramNameToExecute;
+    private static String Path_To_HTTPServer_HTML;
     
     static
     {
         Properties props;
-        try {
             props = GetPropertiesFromFile("mymusicserver.properties");
             WebServer_Port = Integer.parseInt(props.getProperty("WebServer_Port"));
             Bash_ProgramNameToExecute = props.getProperty("Bash_ProgramNameToExecute");
-        } catch (IOException ex) {
-            Logger.getLogger(MyProperties.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            Path_To_HTTPServer_HTML = props.getProperty("Path_To_HTTPServer_HTML");
+        
         
     }
     
@@ -37,6 +37,10 @@ public final class MyProperties extends PropertiesWrapper{
      */
     private MyProperties(){}
 
+    public static String getPath_To_HTTPServer_HTML(){
+        return Path_To_HTTPServer_HTML;
+    }
+    
     public static int getWebServer_Port() {
         return WebServer_Port;
     }

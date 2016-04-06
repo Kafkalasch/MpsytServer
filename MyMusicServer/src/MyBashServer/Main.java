@@ -5,6 +5,7 @@
  */
 package MyBashServer;
 
+import WebServer.ProcessCommunicationHTTPServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,8 +19,8 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
-     
+    public static void main(String[] args) throws IOException, InterruptedException, Exception {
+        WebServer.WebServer.ServeConnections(ProcessCommunicationHTTPServer.class, MyProperties.getWebServer_Port());
 //        System.out.println("Enter something here : ");
 //
 //        try{

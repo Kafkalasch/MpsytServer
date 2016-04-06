@@ -16,7 +16,7 @@
         <copy todir="${dist.dir}" >  
             <fileset dir="${src.dir}/resources" includes="**/*"/>
         </copy>
-        <!--<copy file="src/resources/mymusicserver.properties" flatten="true" todir="${dist.dir}"/>-->
+        
     </target> 
     <!--
 
