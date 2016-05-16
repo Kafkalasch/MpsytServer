@@ -24,10 +24,11 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, InterruptedException, Exception {
                
-        OutputToQueueCommunicator otc = new OutputToQueueCommunicator();
-        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(otc);
+        //OutputToQueueCommunicator otc = new OutputToQueueCommunicator();
+        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(queue);
         comm.startProcess("mpsyt");
-        startHTTPServer(otc.getQueue()).getMainHttpHandler().addCommandListener(comm);
+        startHTTPServer(queue).getMainHttpHandler().addCommandListener(comm);
         
         comm.waitForProcessToEnd();
         System.out.println("End this program");

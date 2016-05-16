@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class MainHttpHandler extends SimpleHttpHandler{
     
-    
+    private final boolean stripEmptyLines = true;
     
     private static Logger logger = LoggerHelper.getLogger(MainHttpHandler.class);
     private Template htmlTemplate;
@@ -73,7 +73,7 @@ public class MainHttpHandler extends SimpleHttpHandler{
     }
     
     private void ProcessQueryParams(URI uri){
-        String command;
+        String command = null;
         int length = defaultLength;
         try {
             HashMap<String,String> map = splitSimpleQuery(uri);
@@ -88,6 +88,8 @@ public class MainHttpHandler extends SimpleHttpHandler{
             command = "ERROR: Konnte Befehl nicht lesen. (UnsupportedEncodingException)";
         }
         
+        if(command != null && command.isEmpty())
+            command = null;
         
         queryParams.command = command;
         
@@ -122,7 +124,8 @@ public class MainHttpHandler extends SimpleHttpHandler{
         
         String tmp = newOutputLines.poll();
         while(tmp != null){
-            BufferedLines.add(tmp);
+            if(!tmp.equals(""))
+                BufferedLines.add(tmp);
             tmp = newOutputLines.poll();
         }
         
