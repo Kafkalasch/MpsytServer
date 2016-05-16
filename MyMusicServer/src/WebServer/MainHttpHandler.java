@@ -143,9 +143,9 @@ public class MainHttpHandler extends SimpleHttpHandler{
     }
     
     private static String ReplaceProhibitedCommands(String command){
-        if(command.equals("q") || command.equals("quit")){
-            command = "Dieses Programm darf nicht beendet werden.";
-        }
+//        if(command.equals("q") || command.equals("quit")){
+//            command = "Dieses Programm darf nicht beendet werden.";
+//        }
         return command;
     }
     
