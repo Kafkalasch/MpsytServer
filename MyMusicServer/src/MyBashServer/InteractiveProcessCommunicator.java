@@ -44,9 +44,11 @@ public class InteractiveProcessCommunicator implements ICommandListener {
             InputStreamReader reader = new InputStreamReader(stdout);
             Scanner scan = new Scanner(reader);
             while (scan.hasNextLine()) {
-               //printStdOutTo.println(scan.nextLine());
-              // printStdOutTo.flush();
-                printStdOutTo.add(scan.nextLine());
+                String nextLine = scan.nextLine();
+                if(CheckIfUserHasAccessToBash(nextLine)){
+                    System.exit(-1);
+                }
+                printStdOutTo.add(nextLine);
             }
          }
         }).start();
@@ -54,6 +56,13 @@ public class InteractiveProcessCommunicator implements ICommandListener {
         writerToStdin = new PrintWriter(stdin);
         
         this.println(processName);
+    }
+    
+    private boolean CheckIfUserHasAccessToBash(String output){
+        if(output.startsWith("/bin/bash"))
+            return true;
+        else
+            return false;
     }
     
     public void println(String line){

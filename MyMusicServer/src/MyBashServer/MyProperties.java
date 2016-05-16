@@ -6,45 +6,54 @@
 package MyBashServer;
 
 import Properties.PropertiesWrapper;
-import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Michi
  */
-public final class MyProperties extends PropertiesWrapper{
+public final class MyProperties extends PropertiesWrapper {
+
+    private static final int WebServer_Port;
+    private static final String Bash_ProgramNameToExecute;
+    private static final String Path_To_HTTPServer_HTML;
+    private static final String Path_To_Log_File;
+    private static final String Path_To_HTTPServer_CSS;
     
-    private static int WebServer_Port;
-    private static String Bash_ProgramNameToExecute;
-    private static String Path_To_HTTPServer_HTML;
-    
-    static
-    {
+    static {
         Properties props;
-            props = GetPropertiesFromFile("mymusicserver.properties");
-            WebServer_Port = Integer.parseInt(props.getProperty("WebServer_Port"));
-            Bash_ProgramNameToExecute = props.getProperty("Bash_ProgramNameToExecute");
-            Path_To_HTTPServer_HTML = props.getProperty("Path_To_HTTPServer_HTML");
-        
-        
+        props = GetPropertiesFromFile("mymusicserver.properties");
+        WebServer_Port = Integer.parseInt(props.getProperty("WebServer_Port"));
+        Bash_ProgramNameToExecute = props.getProperty("Bash_ProgramNameToExecute");
+        Path_To_HTTPServer_HTML = props.getProperty("Path_To_HTTPServer_HTML");
+        Path_To_Log_File = props.getProperty("Path_To_Log_File");
+        Path_To_HTTPServer_CSS = props.getProperty("Path_To_HTTPServer_CSS");
+
     }
-    
-    /***
+
+    /**
+     * *
      * Soll nicht von außen instiantiiert werden. Ist eine statische Klasse.
      */
-    private MyProperties(){}
+    private MyProperties() {
+    }
 
-    public static String getPath_To_HTTPServer_HTML(){
-        return Path_To_HTTPServer_HTML;
+    public static String Path_To_HTTPServer_CSS(){
+        return Path_To_HTTPServer_CSS;
     }
     
+    public static String getPath_To_Log_File(){
+        return Path_To_Log_File;
+    }
+    
+    public static String getPath_To_HTTPServer_HTML() {
+        return Path_To_HTTPServer_HTML;
+    }
+
     public static int getWebServer_Port() {
         return WebServer_Port;
     }
-    
+
     public static String getBash_ProgramNameToExecute() {
         return Bash_ProgramNameToExecute;
     }

@@ -72,9 +72,25 @@ public class MainHttpHandler extends SimpleHttpHandler{
         return length;
     }
     
+    private final int defaultDelayInMs = 500;
+    private int ProcessDelayInMs(HashMap<String,String> map){
+        int delay = defaultDelayInMs;
+        if(map.containsKey("delay")){
+            try
+            {
+                delay = Integer.parseInt(map.get("delay"));
+            }catch(NumberFormatException e){
+                
+            }
+        }
+        return delay;
+    }
+    
+    
     private void ProcessQueryParams(URI uri){
         String command = null;
         int length = defaultLength;
+        int delay = defaultDelayInMs;
         try {
             HashMap<String,String> map = splitSimpleQuery(uri);
             if(map.containsKey("command"))
@@ -83,7 +99,7 @@ public class MainHttpHandler extends SimpleHttpHandler{
                 command = null;
             
             length = ProcessLength(map);
-            
+            delay = ProcessDelayInMs(map);
         } catch (UnsupportedEncodingException ex) {
             command = "ERROR: Konnte Befehl nicht lesen. (UnsupportedEncodingException)";
         }
@@ -96,6 +112,7 @@ public class MainHttpHandler extends SimpleHttpHandler{
         processCommand(command);
         
         queryParams.length = length;
+        queryParams.delayInMs = delay;
         
     }
     
@@ -112,12 +129,25 @@ public class MainHttpHandler extends SimpleHttpHandler{
     
     private synchronized void processCommand(String command){
         if(command != null){
+            command = ReplaceProhibitedCommands(command);
             for(ICommandListener l : _CommandListeners){
                 l.processCommand(command);
+            }
+            try {
+                // Wait for Commands being processed
+                Thread.sleep(queryParams.delayInMs);
+            } catch (InterruptedException ex) {
+                logger.log(Level.WARNING, "Warten des eingegeben delays wurde unterbrochen.", ex);
             }
         }
     }
     
+    private static String ReplaceProhibitedCommands(String command){
+        if(command.equals("q") || command.equals("quit")){
+            command = "Dieses Programm darf nicht beendet werden.";
+        }
+        return command;
+    }
     
     private String GetOutputLines(){
         
@@ -159,7 +189,7 @@ public class MainHttpHandler extends SimpleHttpHandler{
     {
         public String command;
         public int length;
-        
+        public int delayInMs;
         
     }
     
@@ -168,19 +198,27 @@ public class MainHttpHandler extends SimpleHttpHandler{
         private final String ReplaceString = "<!--REPLACEWITHCONTENT-->";
         private final int ReplaceStringLength = ReplaceString.length();
         
-        private String start;
-        private String end;
+        private final String start;
+        private final String end;
         
-        public Template(String template){
+        Template(String template){
             int idx = template.indexOf(ReplaceString);
             start = template.substring(0, idx);
             end = template.substring(idx+ReplaceStringLength, template.length());
         }
         
-        public String GetTemplatedString(String str){
-            
-            return start.replaceFirst("<input type=\"number\" name=\"length\" value=(.*?>)","<input type=\"number\" name=\"length\" value=\""+queryParams.length+"\">" ) + str + end;
+        String GetTemplatedString(String str){
+            String tmpstart = replaceParams(start);
+            return  tmpstart + str + end;
         }
+        
+        private String replaceParams(String str){
+            str = str.replaceFirst("<input type=\"number\" name=\"length\" value=(.*?>)","<input type=\"number\" name=\"length\" value=\""+queryParams.length+"\">" );
+            str = str.replaceFirst("<input type=\"number\" name=\"delay\" value=(.*?>)","<input type=\"number\" name=\"delay\" value=\""+queryParams.delayInMs+"\">" );
+            return str;
+        }
+        
+        
     }
     
 }

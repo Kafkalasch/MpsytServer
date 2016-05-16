@@ -5,7 +5,10 @@
  */
 package MyBashServer;
 
+import Helper.IO.FileLocator;
+import Helper.LoggerHelper;
 import WebServer.HTTPServerWrapper;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,45 +24,35 @@ public class Main {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws IOException, InterruptedException, Exception {
-               
-        //OutputToQueueCommunicator otc = new OutputToQueueCommunicator();
+              
+        startAndRunMusicServer();
+        
+     
+        
+    }
+    
+    private static void startAndRunMusicServer() throws IOException, InterruptedException{
+        File logFile = new File(MyProperties.getPath_To_Log_File());
+        if(!logFile.exists())
+             logFile.createNewFile();
+        
+        LoggerHelper.RegisterFileForLogging(logFile.getAbsolutePath());
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(queue);
         comm.startProcess("mpsyt");
         startHTTPServer(queue).getMainHttpHandler().addCommandListener(comm);
-        
         comm.waitForProcessToEnd();
         System.out.println("End this program");
-        
-////        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(new OutputToFileCommunicator("ProcessOutpur", true).GetOutputStream());
-////        comm.startProcess();
-//        String input = "";
-////        System.out.println("Enter exit or quit to end the program.");
-//        Scanner scan = new Scanner(System.in);
-////        //Thread.sleep(1000);
-////        //comm.println("/kiesza");
-////        while(true)
-////        {
-//            
-//            input = scan.nextLine();
-////            if(input.equals("exit") || input.equals("quit"))
-////                    break;
-////            
-////            comm.println(input);
-////
-////        }
-////        comm.killProcess();
-////        comm.waitForProcessToEnd();
-        
-        
     }
     
     private static HTTPServerWrapper startHTTPServer(ConcurrentLinkedQueue<String> queue){
         ArrayList<String> contexts = new ArrayList<>();
         contexts.add("/");
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, MyProperties.Path_To_HTTPServer_CSS());
         w.startServer();
         return w;
     }
@@ -69,7 +62,7 @@ public class Main {
         contexts.add("/");
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         fillQueue(queue);
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, null);
         w.startServer();
     }
     
