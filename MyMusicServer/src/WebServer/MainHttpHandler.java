@@ -9,12 +9,15 @@ import DataStructures.LinkedList;
 import Helper.IO.FileLocator;
 import Helper.LoggerHelper;
 import HttpServer.SimpleHttpHandler;
+import MyBashServer.ICommandListener;
 import MyBashServer.MyProperties;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,16 +26,18 @@ import java.util.logging.Logger;
  *
  * @author Michi
  */
-public class MyHttpHandler extends SimpleHttpHandler{
+public class MainHttpHandler extends SimpleHttpHandler{
     
-    private static Logger logger = LoggerHelper.getLogger(MyHttpHandler.class);
+    
+    
+    private static Logger logger = LoggerHelper.getLogger(MainHttpHandler.class);
     private Template htmlTemplate;
     
     private final LinkedList<String> BufferedLines = new LinkedList<>();
     private final ConcurrentLinkedQueue<String> newOutputLines;
     private final QueryParams queryParams = new QueryParams();
     
-    public MyHttpHandler(ConcurrentLinkedQueue<String> output){
+    public MainHttpHandler(ConcurrentLinkedQueue<String> output){
         this. newOutputLines = output;
         try{
             
@@ -85,9 +90,32 @@ public class MyHttpHandler extends SimpleHttpHandler{
         
         
         queryParams.command = command;
+        
+        processCommand(command);
+        
         queryParams.length = length;
         
     }
+    
+    private final List<ICommandListener> _CommandListeners = new ArrayList<>();
+    
+    public synchronized void addCommandListener( ICommandListener l ) {
+        _CommandListeners.add( l );
+    }
+    
+    public synchronized void removeCommandListener( ICommandListener l ) {
+        _CommandListeners.remove( l );
+    }
+
+    
+    private synchronized void processCommand(String command){
+        if(command != null){
+            for(ICommandListener l : _CommandListeners){
+                l.processCommand(command);
+            }
+        }
+    }
+    
     
     private String GetOutputLines(){
         

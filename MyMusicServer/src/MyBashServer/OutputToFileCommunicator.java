@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author Michi
  */
-public class OutputToFileCommunicator extends OutputCommunicator{
+public class OutputToFileCommunicator extends AOutputCommunicator{
 
     private FileWriter fileWriter;
     private boolean autoFlush;

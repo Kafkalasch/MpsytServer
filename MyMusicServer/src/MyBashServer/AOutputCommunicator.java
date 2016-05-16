@@ -16,7 +16,7 @@ import java.util.Scanner;
  *
  * @author Michi
  */
-public abstract class OutputCommunicator {
+public abstract class AOutputCommunicator {
     
     private PipedOutputStream outputStream = null;
     

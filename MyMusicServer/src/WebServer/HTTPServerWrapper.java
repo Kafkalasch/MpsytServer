@@ -26,15 +26,20 @@ public class HTTPServerWrapper {
     
     private final static String logmsg_Server_Started = "SimpleHttpServer started on port " + MyProperties.getWebServer_Port();
     
-    private SimpleHttpServer httpServer;
+    private final SimpleHttpServer httpServer;
+    private final MainHttpHandler handler;
     
     public HTTPServerWrapper(Iterable<String> contexts, ConcurrentLinkedQueue<String> OutputLines){
-        MyHttpHandler handler = new MyHttpHandler(OutputLines);
+        handler = new MainHttpHandler(OutputLines);
         ArrayList<Pair<String, HttpHandler>> handlers = new ArrayList<>();
         for(String c : contexts){
             handlers.add(new Pair<>(c, handler));
         }
         httpServer = new HttpServer.SimpleHttpServer(MyProperties.getWebServer_Port(),handlers);
+    }
+    
+    public MainHttpHandler getMainHttpHandler(){
+        return handler;
     }
     
     public void startServer(){

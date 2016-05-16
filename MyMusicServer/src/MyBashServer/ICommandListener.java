@@ -9,11 +9,7 @@ package MyBashServer;
  *
  * @author Michi
  */
-public class OutputToSystemOutCommunicator extends AOutputCommunicator {
-
-    @Override
-    public void println(String str) {
-        System.out.println(str);
-    }
-    
+public interface ICommandListener {
+ 
+    public void processCommand(String command);
 }

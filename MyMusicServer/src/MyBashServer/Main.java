@@ -23,25 +23,15 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, InterruptedException, Exception {
-        ArrayList<String> contexts = new ArrayList<>();
-        contexts.add("/");
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        fillQueue(queue);
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
-        w.startServer();
-//        System.out.println("Enter something here : ");
-//
-//        try{
-//            BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-//            String s = bufferRead.readLine();
-//
-//            System.out.println(s);
-//        }
-//        catch(IOException e)
-//        {
-//                e.printStackTrace();
-//        }
-
+               
+        OutputToQueueCommunicator otc = new OutputToQueueCommunicator();
+        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(otc);
+        comm.startProcess("mpsyt");
+        startHTTPServer(otc.getQueue()).getMainHttpHandler().addCommandListener(comm);
+        
+        comm.waitForProcessToEnd();
+        System.out.println("End this program");
+        
 ////        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(new OutputToFileCommunicator("ProcessOutpur", true).GetOutputStream());
 ////        comm.startProcess();
 //        String input = "";
@@ -63,6 +53,23 @@ public class Main {
 ////        comm.waitForProcessToEnd();
         
         
+    }
+    
+    private static HTTPServerWrapper startHTTPServer(ConcurrentLinkedQueue<String> queue){
+        ArrayList<String> contexts = new ArrayList<>();
+        contexts.add("/");
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
+        w.startServer();
+        return w;
+    }
+    
+    private static void testServer(){
+        ArrayList<String> contexts = new ArrayList<>();
+        contexts.add("/");
+        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+        fillQueue(queue);
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
+        w.startServer();
     }
     
     private static void fillQueue(ConcurrentLinkedQueue<String> queue){

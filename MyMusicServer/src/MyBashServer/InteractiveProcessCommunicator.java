@@ -16,15 +16,15 @@ import java.util.Scanner;
  *
  * @author Michi
  */
-public class InteractiveProcessCommunicator {
+public class InteractiveProcessCommunicator implements ICommandListener {
     
     private ProcessBuilder builder;
     private Process process = null;
     private PrintWriter writerToStdin = null;
     private PrintWriter printStdOutTo;
     
-    public InteractiveProcessCommunicator(OutputStream printStdOutTo){
-        this.printStdOutTo = new PrintWriter(printStdOutTo);
+    public InteractiveProcessCommunicator(AOutputCommunicator outputCommunicator) throws IOException{
+        this.printStdOutTo = new PrintWriter(outputCommunicator.GetOutputStream());
         builder = new ProcessBuilder("/bin/bash");
         builder.redirectErrorStream(true); // vereint stderr und stdout
         //builder.inheritIO()
@@ -64,6 +64,11 @@ public class InteractiveProcessCommunicator {
     
     public void waitForProcessToEnd() throws InterruptedException{
         process.waitFor();
+    }
+
+    @Override
+    public void processCommand(String command) {
+        println(command);
     }
     
 }
