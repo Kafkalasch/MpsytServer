@@ -58,7 +58,7 @@ public class MainHttpHandler extends SimpleHttpHandler{
 
     }
     
-    private final int defaultLength = 100;
+    private final int defaultLength = 50;
     private int ProcessLength(HashMap<String,String> map){
         int length = defaultLength;
         if(map.containsKey("length")){

@@ -1,3 +1,69 @@
-p {
-	color: green;
+/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+
+html, body
+{
+    height: 100%;
+}
+
+div#command
+{
+	display: flex; /* or inline-flex */
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: baseline;
+    justify-content: center;
+    align-content: flex-start;
+}
+
+input[name=command]
+{
+	flex: 0 1 30%;
+
+}
+
+div#commandoptions
+{
+	position:relative;
+	background-color: #0066FF;
+	color: white;
+}
+
+div#commandoptions > ul
+{
+	display: none;
+	background-color: #0066FF;
+	color: white;
+}
+
+div#commandoptions:hover > ul
+{
+	display:block;
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+div#commandoptions li
+{
+	display: flex; /* or inline-flex */
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.label, input
+{
+	margin:5px;
+}
+
+#output {
+	height: 70%;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+	overflow:auto;
+	border:8px solid yellowgreen;
+	padding:2%
 }

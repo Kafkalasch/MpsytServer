@@ -1,23 +1,49 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Michis Musik Server</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="stylesheet.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
     </head>
     <body>
-        <div>TODO write content</div>
-         <form action="/" method="get">
-            <input type="text" name="command" value=""><br><br>
-            <p>Anzahl ausgegebener Zeilen</p>
-            <input type="number" name="length" value="100"><br><br>
-            <p>Delay in Ms</p>
-            <input type="number" name="delay" value="500"><br><br>
-            <input type="submit" value="Submit">
-        </form> 
-        <p>
-        <!--REPLACEWITHCONTENT-->
-        </p>
+        <header>
+             <form action="/" method="get">
+                <div id="command">
+                    <div class="label">
+                        Befehl eingeben:
+                    </div>
+                    <input type="text" name="command" value=""><br><br>
+                    <input type="submit" value="Submit">
+                    <div id="commandoptions">
+                        <div class=label>Optionen</div>
+                        <ul>
+                            <li>
+                                <div class="label">
+                                    Anzahl ausgegebener Zeilen: 
+                                </div>
+                                <input type="number" name="length" value="50">
+                            </li>
+                            <li>
+                                <div class="label">
+                                    Delay in ms: 
+                                </div>
+                                <input type="number" name="delay" value="500">
+                           </li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </form> 
+        </header>
+        <div id="output">
+            <!--REPLACEWITHCONTENT-->
+        </div>
+        <script>
+            var myDiv = document.getElementById("output");
+            myDiv.scrollTop = myDiv.scrollHeight;
+        </script>
     </body>
 </html>
+
