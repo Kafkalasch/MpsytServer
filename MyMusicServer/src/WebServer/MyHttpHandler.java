@@ -5,6 +5,7 @@
  */
 package WebServer;
 
+import DataStructures.LinkedList;
 import Helper.IO.FileLocator;
 import Helper.LoggerHelper;
 import HttpServer.SimpleHttpHandler;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +28,12 @@ public class MyHttpHandler extends SimpleHttpHandler{
     private static Logger logger = LoggerHelper.getLogger(MyHttpHandler.class);
     private Template htmlTemplate;
     
-    public MyHttpHandler(){
+    private final LinkedList<String> BufferedLines = new LinkedList<>();
+    private final ConcurrentLinkedQueue<String> newOutputLines;
+    private final QueryParams queryParams = new QueryParams();
+    
+    public MyHttpHandler(ConcurrentLinkedQueue<String> output){
+        this. newOutputLines = output;
         try{
             
         htmlTemplate = new Template(FileLocator.readTextFile(MyProperties.getPath_To_HTTPServer_HTML()));
@@ -40,26 +48,88 @@ public class MyHttpHandler extends SimpleHttpHandler{
     
     @Override
     protected Response createResponseFromQueryParams(URI uri) {
-        Response r = null;
-        
+        ProcessQueryParams(uri);
+        return new Response(htmlTemplate.GetTemplatedString(GetOutputLines()), HTTP_OK_STATUS);
+
+    }
+    
+    private final int defaultLength = 100;
+    private int ProcessLength(HashMap<String,String> map){
+        int length = defaultLength;
+        if(map.containsKey("length")){
+            try
+            {
+                length = Integer.parseInt(map.get("length"));
+            }catch(NumberFormatException e){
+                
+            }
+        }
+        return length;
+    }
+    
+    private void ProcessQueryParams(URI uri){
         String command;
+        int length = defaultLength;
         try {
             HashMap<String,String> map = splitSimpleQuery(uri);
             if(map.containsKey("command"))
-                command = splitSimpleQuery(uri).get("command");
+                command = map.get("command");
             else
                 command = null;
+            
+            length = ProcessLength(map);
+            
         } catch (UnsupportedEncodingException ex) {
             command = "ERROR: Konnte Befehl nicht lesen. (UnsupportedEncodingException)";
         }
         
         
-        r = new Response(htmlTemplate.GetTemplatedString("<p>Du hast folgenden Text geschickt: <i>"+
-               command +"</i></p>"), HTTP_OK_STATUS);
+        queryParams.command = command;
+        queryParams.length = length;
+        
+    }
+    
+    private String GetOutputLines(){
         
         
+        String tmp = newOutputLines.poll();
+        while(tmp != null){
+            BufferedLines.add(tmp);
+            tmp = newOutputLines.poll();
+        }
         
-        return r;
+        
+        int i = 0;
+        LinkedList<String>.Node<String> tmpNode = BufferedLines.endNode;
+        LinkedList<String> buildText = new LinkedList<>();
+        while(i < queryParams.length && tmpNode != null){
+            buildText.add(tmpNode.element);
+            tmpNode = tmpNode.previousNode;
+            i++;
+        }
+        
+        if(tmpNode != null && i >= queryParams.length){
+            BufferedLines.removeAllNodesBefore(tmpNode.nextNode == null ? tmpNode : tmpNode.nextNode);
+        }
+        
+        StringBuilder builder = new StringBuilder();
+        for(Iterator<String> iter = buildText.reverseIterator(); iter.hasNext();){
+            String s = iter.next();
+            builder.append(s);
+            builder.append("<br>");
+        }
+        
+        
+        return builder.toString();
+
+    }
+    
+    private class QueryParams
+    {
+        public String command;
+        public int length;
+        
+        
     }
     
     private class Template{
@@ -77,7 +147,8 @@ public class MyHttpHandler extends SimpleHttpHandler{
         }
         
         public String GetTemplatedString(String str){
-            return start + str + end;
+            
+            return start.replaceFirst("<input type=\"number\" name=\"length\" value=(.*?>)","<input type=\"number\" name=\"length\" value=\""+queryParams.length+"\">" ) + str + end;
         }
     }
     

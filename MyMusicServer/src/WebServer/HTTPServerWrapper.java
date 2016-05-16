@@ -9,9 +9,10 @@ import Helper.LoggerHelper;
 import HttpServer.SimpleHttpServer;
 import MyBashServer.MyProperties;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.net.httpserver.HttpHandler;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.javatuples.Pair;
 
 /**
@@ -27,8 +28,8 @@ public class HTTPServerWrapper {
     
     private SimpleHttpServer httpServer;
     
-    public HTTPServerWrapper(Iterable<String> contexts){
-        MyHttpHandler handler = new MyHttpHandler();
+    public HTTPServerWrapper(Iterable<String> contexts, ConcurrentLinkedQueue<String> OutputLines){
+        MyHttpHandler handler = new MyHttpHandler(OutputLines);
         ArrayList<Pair<String, HttpHandler>> handlers = new ArrayList<>();
         for(String c : contexts){
             handlers.add(new Pair<>(c, handler));

@@ -8,6 +8,9 @@ package MyBashServer;
 import WebServer.HTTPServerWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -22,7 +25,9 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException, Exception {
         ArrayList<String> contexts = new ArrayList<>();
         contexts.add("/");
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts);
+        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+        fillQueue(queue);
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue);
         w.startServer();
 //        System.out.println("Enter something here : ");
 //
@@ -58,6 +63,26 @@ public class Main {
 ////        comm.waitForProcessToEnd();
         
         
+    }
+    
+    private static void fillQueue(ConcurrentLinkedQueue<String> queue){
+        new Thread()
+        {
+            public void run() {
+                int i = 0;
+                while(true){
+                   i++;   
+                   String msg = "Thread 'fillQueue' Durchlauf: " + i;
+                   System.out.println(msg);
+                   queue.add(msg);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }.start();
     }
     
 }
