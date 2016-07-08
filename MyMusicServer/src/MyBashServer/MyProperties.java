@@ -18,7 +18,9 @@ public final class MyProperties extends PropertiesWrapper {
     private static final String Bash_ProgramNameToExecute;
     private static final String Path_To_HTTPServer_HTML;
     private static final String Path_To_Log_File;
+    private static final String Path_To_StdOut_File;
     private static final String Path_To_HTTPServer_CSS;
+    private static final String Path_To_HTTPServer_GoogleChromePlugin;
     
     static {
         Properties props;
@@ -27,7 +29,9 @@ public final class MyProperties extends PropertiesWrapper {
         Bash_ProgramNameToExecute = props.getProperty("Bash_ProgramNameToExecute");
         Path_To_HTTPServer_HTML = props.getProperty("Path_To_HTTPServer_HTML");
         Path_To_Log_File = props.getProperty("Path_To_Log_File");
+        Path_To_StdOut_File = props.getProperty("Path_To_StdOut_File");
         Path_To_HTTPServer_CSS = props.getProperty("Path_To_HTTPServer_CSS");
+        Path_To_HTTPServer_GoogleChromePlugin  = props.getProperty("Path_To_HTTPServer_GoogleChromePlugin");
 
     }
 
@@ -38,7 +42,15 @@ public final class MyProperties extends PropertiesWrapper {
     private MyProperties() {
     }
 
-    public static String Path_To_HTTPServer_CSS(){
+    public static String getPath_To_StdOut_File(){
+        return Path_To_StdOut_File;
+    }
+    
+    public static String getPath_To_HTTPServer_GoogleChromePlugin(){
+        return Path_To_HTTPServer_GoogleChromePlugin;
+    }
+    
+    public static String getPath_To_HTTPServer_CSS(){
         return Path_To_HTTPServer_CSS;
     }
     

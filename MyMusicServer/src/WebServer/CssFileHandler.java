@@ -24,7 +24,7 @@ public class CssFileHandler extends SimpleHttpHandler{
     
     public CssFileHandler(){
         try {
-            String CSS_String =  FileLocator.readTextFile(MyProperties.Path_To_HTTPServer_CSS());
+            String CSS_String =  FileLocator.readTextFile(MyProperties.getPath_To_HTTPServer_CSS());
             CSS = new Response(CSS_String, HTTP_OK_STATUS);
         } catch (IOException ex) {
             LoggerHelper.getLogger(this).log(Level.WARNING, "CSS-Datei konnte nicht gefunden oder gelesen werden.", ex);

@@ -5,10 +5,11 @@
  */
 package MyBashServer;
 
-import Helper.IO.FileLocator;
 import Helper.LoggerHelper;
 import WebServer.HTTPServerWrapper;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -43,16 +44,32 @@ public class Main {
         LoggerHelper.RegisterFileForLogging(logFile.getAbsolutePath());
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(queue);
+        comm.AddWriter(GetStdOutFileWriter());
         comm.startProcess("mpsyt");
-        startHTTPServer(queue).getMainHttpHandler().addCommandListener(comm);
+        startHTTPServer(queue).AddCommandListener(comm);
         comm.waitForProcessToEnd();
         System.out.println("End this program");
+    }
+    
+    
+    private static BufferedWriter _StdOutFileWriter = null;
+    private static BufferedWriter GetStdOutFileWriter(){
+        if(_StdOutFileWriter != null)
+            return _StdOutFileWriter;
+        
+        File logfile = new File(MyProperties.getPath_To_StdOut_File());
+        try {
+            _StdOutFileWriter = new BufferedWriter(new FileWriter(logfile, true));
+        } catch (IOException ex) {
+            LoggerHelper.getLogger(Main.class).log(Level.SEVERE, null, ex);
+        }
+        return _StdOutFileWriter;
     }
     
     private static HTTPServerWrapper startHTTPServer(ConcurrentLinkedQueue<String> queue){
         ArrayList<String> contexts = new ArrayList<>();
         contexts.add("/");
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, MyProperties.Path_To_HTTPServer_CSS());
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, MyProperties.getPath_To_HTTPServer_CSS(), MyProperties.getPath_To_HTTPServer_GoogleChromePlugin());
         w.startServer();
         return w;
     }
@@ -62,7 +79,7 @@ public class Main {
         contexts.add("/");
         ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
         fillQueue(queue);
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, null);
+        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, null, null);
         w.startServer();
     }
     

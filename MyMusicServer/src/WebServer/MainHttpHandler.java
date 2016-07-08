@@ -146,6 +146,9 @@ public class MainHttpHandler extends SimpleHttpHandler{
 //        if(command.equals("q") || command.equals("quit")){
 //            command = "Dieses Programm darf nicht beendet werden.";
 //        }
+        if(command.startsWith("set ")){
+            command = "You are not allowed to change configuration settings.";
+        }
         return command;
     }
     
