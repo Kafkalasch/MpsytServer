@@ -1,0 +1,35 @@
+#!/bin/bash
+# /etc/init.d/mymusicserver
+
+### BEGIN INIT INFO
+# Provides:          mymusicserver
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: communicator for mps-youtube over http
+# Description:       This service is used to provide a html and a googlechromeplugin server for mpsyt
+### END INIT INFO
+
+
+case "$1" in 
+    start)
+
+    echo "Starting musicserver-loop"
+	cd /usr/local/bin/MyMusicServer
+	# -Xss256k: thread stack size. 256K reduces per-thread memory usage and may prevent "java.lang.OutOfMemoryError: unable to create new native thread" on some systems
+	# -Djava.awt.headless=true: required for image transcoding to work on headless systems (eg no X-Window libraries)
+	./musicserver-loop.sh > initd.log 2>&1 &
+        ;;
+    stop)
+        echo "Stopping musicserer-loop"
+        kill $(ps axf | grep musicserver-loop | grep -v grep | awk '{print $1}')
+        kill $(ps axf | grep MyMusicServer.jar | grep -v grep | awk '{print $1}')
+        ;;
+    *)
+        echo "Usage: /etc/init.d/mymusicserver start|stop"
+        exit 1
+        ;;
+esac
+
+exit 0
