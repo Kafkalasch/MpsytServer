@@ -21,6 +21,7 @@ public final class MyProperties extends PropertiesWrapper {
     private static final String Path_To_StdOut_File;
     private static final String Path_To_HTTPServer_CSS;
     private static final String Path_To_HTTPServer_GoogleChromePlugin;
+    private static final String[] kill_processes;
     
     static {
         Properties props;
@@ -32,7 +33,7 @@ public final class MyProperties extends PropertiesWrapper {
         Path_To_StdOut_File = props.getProperty("Path_To_StdOut_File");
         Path_To_HTTPServer_CSS = props.getProperty("Path_To_HTTPServer_CSS");
         Path_To_HTTPServer_GoogleChromePlugin  = props.getProperty("Path_To_HTTPServer_GoogleChromePlugin");
-
+        kill_processes = props.getProperty("kill_processes").split(",");
     }
 
     /**
@@ -42,6 +43,10 @@ public final class MyProperties extends PropertiesWrapper {
     private MyProperties() {
     }
 
+    public static String[] getKill_processes(){
+        return kill_processes;
+    }
+    
     public static String getPath_To_StdOut_File(){
         return Path_To_StdOut_File;
     }

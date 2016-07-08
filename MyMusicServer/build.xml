@@ -16,7 +16,9 @@
         <copy todir="${dist.dir}" >  
             <fileset dir="${src.dir}/resources" includes="**/*"/>
         </copy>
-        
+        <echo>Kopiere musicserver-loop.sh</echo>
+        <copy file="${src.dir}/musicserver-loop.sh" todir="${dist.dir}"/>
+        <chmod file="${dist.dir}/musicserver-loop.sh" perm="+x"/>
     </target> 
     <!--
 

@@ -143,8 +143,14 @@ public class InteractiveProcessCommunicator implements ICommandListener {
         eventHelper.clearListeners();
         
         process.destroyForcibly();
-        
-        
+        for(String p : MyProperties.getKill_processes()){
+            try{
+                
+                Runtime.getRuntime().exec("killall " + p);
+            }catch(Exception e){
+                logger.log(Level.SEVERE, null, e);
+            }
+        }
         
     }
     
