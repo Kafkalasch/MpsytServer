@@ -17,6 +17,7 @@ import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,18 +25,21 @@ import java.util.logging.Level;
  */
 public class InteractiveProcessCommunicator implements ICommandListener {
     
-    private final ProcessBuilder builder;
+    public static final Logger logger = LoggerHelper.getLogger(InteractiveProcessCommunicator.class);
+    
+    private ProcessBuilder builder;
     private Process process = null;
     private PrintWriter writerToStdin = null;
     //private PrintWriter printStdOutTo;
     private AbstractQueue<String> printStdOutTo;
     private ArrayList<Writer> Writers = new ArrayList<>();
     private final EventHelper<NewLineInStdOutEvent> eventHelper = new EventHelper<>();
+    private boolean killed = false;
+    private Thread printerThread = null;
     
     public InteractiveProcessCommunicator(AbstractQueue<String> queue) throws IOException{
         //this.printStdOutTo = new PrintWriter(outputCommunicator.GetOutputStream());
-        builder = new ProcessBuilder("/bin/bash");
-        builder.redirectErrorStream(true); // vereint stderr und stdout
+        
         //builder.inheritIO()
         this.printStdOutTo = queue;
     }
@@ -49,29 +53,35 @@ public class InteractiveProcessCommunicator implements ICommandListener {
     }
     
     public void startProcess(String processName) throws IOException{
+//        builder = new ProcessBuilder("/bin/bash");
+        builder = new ProcessBuilder(processName);
+        builder.redirectErrorStream(true); // vereint stderr und stdout
         process = builder.start();
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
         
         // Printed stdout in einem separatem Thread
-        new Thread(new Runnable() {
+        printerThread = new Thread(new Runnable() {
          public void run() {
             InputStreamReader reader = new InputStreamReader(stdout);
             Scanner scan = new Scanner(reader);
-            while (scan.hasNextLine()) {
+            while (scan.hasNextLine() && !killed) {
                 String nextLine = scan.nextLine();
                 if(CheckIfUserHasAccessToBash(nextLine)){
                     System.exit(-1);
                 }
                 printStdOutTo.add(nextLine);
                 eventHelper.fireEvent(new NewLineInStdOutEvent(this, nextLine));
+                if(killed)
+                    break;
             }
          }
-        }).start();
+        });
+        printerThread.start();
         
         writerToStdin = new PrintWriter(stdin);
         
-        this.println(processName);
+//        this.println(processName);
     }
     
     private boolean CheckIfUserHasAccessToBash(String output){
@@ -95,7 +105,47 @@ public class InteractiveProcessCommunicator implements ICommandListener {
     }
     
     public void killProcess(){
-        process.destroy();
+        logger.log(Level.INFO, "killProcess called.");
+        killed = true;
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ex) {
+            
+        }
+        try {
+            process.getOutputStream().close();
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, null, ex);
+        }
+        try {
+            process.getInputStream().close();
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, null, ex);
+        }
+        try {
+            process.getErrorStream().close();
+        } catch (IOException ex) {
+            logger.log(Level.WARNING, null, ex);
+        }
+        
+        if(printerThread != null)
+            printerThread.stop();
+        if(writerToStdin != null)
+            writerToStdin.close();
+        for(Writer w : Writers){
+            
+            try {
+                w.close();
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
+        }
+        eventHelper.clearListeners();
+        
+        process.destroyForcibly();
+        
+        
+        
     }
     
     public void waitForProcessToEnd() throws InterruptedException{
@@ -104,7 +154,11 @@ public class InteractiveProcessCommunicator implements ICommandListener {
 
     @Override
     public void processCommand(String command) {
-        println(command);
+        if(command.equals("killAll")){
+            killProcess();
+        }else{
+            println(command);
+        }
     }
     
 }

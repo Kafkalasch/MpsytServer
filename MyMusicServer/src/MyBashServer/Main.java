@@ -42,13 +42,18 @@ public class Main {
              logFile.createNewFile();
         
         LoggerHelper.RegisterFileForLogging(logFile.getAbsolutePath());
-        ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-        InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(queue);
-        comm.AddWriter(GetStdOutFileWriter());
-        comm.startProcess("mpsyt");
-        startHTTPServer(queue).AddCommandListener(comm);
-        comm.waitForProcessToEnd();
-        System.out.println("End this program");
+        
+            System.out.println("starte programm.");
+            ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+            InteractiveProcessCommunicator comm = new InteractiveProcessCommunicator(queue);
+            comm.AddWriter(GetStdOutFileWriter());
+            comm.startProcess(MyProperties.getBash_ProgramNameToExecute());
+            startHTTPServer(queue).AddCommandListener(comm);
+            comm.waitForProcessToEnd();
+            stopHTTPServer();
+            comm.killProcess();
+            System.out.println("program beendet.");
+            System.exit(0);
     }
     
     
@@ -66,10 +71,18 @@ public class Main {
         return _StdOutFileWriter;
     }
     
+    private static HTTPServerWrapper w = null;
+    private static void stopHTTPServer(){
+        if(w != null)
+            w.stopServer();
+        w = null;
+    }
+    
     private static HTTPServerWrapper startHTTPServer(ConcurrentLinkedQueue<String> queue){
+        stopHTTPServer();
         ArrayList<String> contexts = new ArrayList<>();
         contexts.add("/");
-        HTTPServerWrapper w = new HTTPServerWrapper(contexts, queue, MyProperties.getPath_To_HTTPServer_CSS(), MyProperties.getPath_To_HTTPServer_GoogleChromePlugin());
+        w = new HTTPServerWrapper(contexts, queue, MyProperties.getPath_To_HTTPServer_CSS(), MyProperties.getPath_To_HTTPServer_GoogleChromePlugin());
         w.startServer();
         return w;
     }

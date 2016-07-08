@@ -35,8 +35,7 @@ public class GoogleChromePluginHandler extends SimpleHttpHandler implements Even
     }
     
     public void addCommandListener(ICommandListener commandListener){
-        if(commandListener != null && commandListener instanceof InteractiveProcessCommunicator)
-            ((InteractiveProcessCommunicator) commandListener).getNewLineInStdOutEventHelper().removeListener(this);
+        deregister();
         
         this.commandListener = commandListener;
         
@@ -46,35 +45,52 @@ public class GoogleChromePluginHandler extends SimpleHttpHandler implements Even
     
     @Override
     protected Response createResponseFromQueryParams(URI uri) {
-        HashMap<String,String> map;
-        try {
-            map = splitSimpleQuery(uri);
-        } catch (UnsupportedEncodingException ex) {
-            logger.log(Level.SEVERE, null, ex);
-            return new GCPResponse("UnsupportedEncodingException", HTTP_INTERNAL_SERVER_ERROR);
-        }
-        
-        if(map.containsKey("youtube-url")){
-            String modus = "single";
-            if(map.containsKey("modus")){
-                modus = map.get("modus");
+        String query = uri.getQuery();
+        if(query.startsWith("mix=") || query.startsWith("single=") || query.startsWith("stop")){
+            //valid
+            String youtube_url = null;
+            String modus;
+            if(query.startsWith("mix")){
+                youtube_url = query.substring(4);
+                modus = "mix";
+            }else if(query.startsWith("single")){
+                youtube_url = query.substring(7);
+                modus = "single";
+            }else{
+                modus = "stop";
+                processCommand(youtube_url, modus);
+                return new GCPResponse("Stopped song.", HTTP_OK_STATUS);
             }
             
+            
+            
             try{
-                processCommand(map.get("youtube-url"), modus);
+                processCommand(youtube_url, modus);
                 return new GCPResponse("Plays " + modus, HTTP_OK_STATUS);
             }catch(Exception ex){
                 logger.log(Level.SEVERE, null, ex);
                 return new GCPResponse("Exception occured: " + ex.toString(), HTTP_INTERNAL_SERVER_ERROR);
             }
             
+            
+            
+            
         }else{
+            // not valid
             logger.log(Level.SEVERE, "No 'youtube-url' command found");
             return new GCPResponse("Expects command: youtube-url", HTTP_BAD_REQUEST);
         }
+        
+            
     }
     
     private synchronized void processCommand(String url, String modus){
+        if(modus.startsWith("stop")){
+            commandListener.processCommand("killAll");
+            return;
+        }
+        
+        
         boolean mix = false;
         if(modus.equals("mix"))
             mix = true;
@@ -111,6 +127,11 @@ public class GoogleChromePluginHandler extends SimpleHttpHandler implements Even
     }
 
 
+    public void deregister(){
+         if(commandListener != null && commandListener instanceof InteractiveProcessCommunicator)
+            ((InteractiveProcessCommunicator) commandListener).getNewLineInStdOutEventHelper().removeListener(this);
+    }
+    
     private boolean newStdOutLinePrinted = false;
     @Override
     public void EventOccured(NewLineInStdOutEvent event) {
@@ -127,6 +148,8 @@ public class GoogleChromePluginHandler extends SimpleHttpHandler implements Even
         }
         
     }
+    
+    
     
 }
 

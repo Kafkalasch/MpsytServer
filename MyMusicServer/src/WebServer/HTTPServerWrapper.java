@@ -28,7 +28,7 @@ public class HTTPServerWrapper {
     
     private final SimpleHttpServer httpServer;
     private final MainHttpHandler handler;
-    private final GoogleChromePluginHandler gchromeHandler = null;
+    private GoogleChromePluginHandler gchromeHandler = null;
     
     public HTTPServerWrapper(Iterable<String> contexts, ConcurrentLinkedQueue<String> OutputLines,
             String css_context, String GoogleChromePlugin_context){
@@ -41,17 +41,16 @@ public class HTTPServerWrapper {
         if(css_context != null)
             handlers.add(new Pair<>(css_context.startsWith("/") ? css_context : "/"+css_context, new CssFileHandler()));
         
-        GoogleChromePluginHandler gcph = null;
         if(GoogleChromePlugin_context != null){
-            gcph = new GoogleChromePluginHandler();
+            gchromeHandler = new GoogleChromePluginHandler();
             
-            handlers.add(new Pair<>(GoogleChromePlugin_context.startsWith("/") ? GoogleChromePlugin_context : "/"+GoogleChromePlugin_context, gcph));
+            handlers.add(new Pair<>(GoogleChromePlugin_context.startsWith("/") ? GoogleChromePlugin_context : "/"+GoogleChromePlugin_context, gchromeHandler));
         }
         
         httpServer = new HttpServer.SimpleHttpServer(MyProperties.getWebServer_Port(),handlers);
         
-        if(gcph != null)
-            gcph.setAdress(httpServer.GetAdress());
+        if(gchromeHandler != null)
+            gchromeHandler.setAdress(httpServer.GetAdress());
     }
     
     public void AddCommandListener(ICommandListener comm){
@@ -65,6 +64,12 @@ public class HTTPServerWrapper {
         httpServer.start();
         //logger.log(Level.INFO, logmsg_Server_Started);
         //System.out.println(logmsg_Server_Started);
+    }
+    
+    public void stopServer(){
+        httpServer.stop();
+        if(gchromeHandler != null)
+            gchromeHandler.deregister();
     }
     
 }
