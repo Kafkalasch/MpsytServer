@@ -1,6 +1,11 @@
 # MpsytServer
 
+
 Runs mpsyt in a local terminal and allows communication via a browser on remote machines. 
+
+dependencies:
+- JavaTuples (javatuples-1.2.jar ->  http://www.javatuples.org/ )
+- MichisJavaLibrary ( https://github.com/Kafkalasch/MichisJavaLibrary )
 
 braucht für die installation mps-youtube
 dieses wieder braucht youtube-dl
