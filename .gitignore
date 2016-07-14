@@ -1,0 +1,6 @@
+/MyMusicServer/nbproject/private/
+/MyMusicServer/build/
+/MyMusicServer/dist/
+**/log.txt
+**/general.log*
+**/stdout.log
